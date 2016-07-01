@@ -68,7 +68,7 @@ class MoranLocalRate(GeoAlgorithm):
             print 'INFO: Local Moran\'s for rates using rook contiguity'
             w=pysal.rook_from_shapefile(filename)
 
-        f = pysal.open(pysal.examples.get_path(filename.replace('.shp','.dbf')))
+        f = pysal.open(filename.replace('.shp','.dbf'))
         y=np.array(f.by_col[str(variable_field)])
         population=np.array(f.by_col[str(population_field)])
         lm = pysal.esda.moran.Moran_Local_Rate(y,population,w,transformation = "r", permutations = 999)

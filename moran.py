@@ -49,7 +49,7 @@ class Moran(GeoAlgorithm):
             print 'INFO: Moran\'s using rook contiguity'
             w=pysal.rook_from_shapefile(filename)
     
-        f = pysal.open(pysal.examples.get_path(filename.replace('.shp','.dbf')))
+        f = pysal.open(filename.replace('.shp','.dbf'))
         y=np.array(f.by_col[str(field)])
         m = pysal.Moran(y,w,transformation = "r", permutations = 999)
 
