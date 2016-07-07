@@ -20,4 +20,4 @@ so that QGIS will be able to import pysal.
 
 6. You should be able to see the plugin in the Processing Toolbox now. 
 
-![pysal](png/pysal.png)
+![sofar](png/sofar.png)

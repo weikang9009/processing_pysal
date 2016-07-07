@@ -5,13 +5,13 @@
 
 ### Implementation so far:
 * Exploratory Spatial Data Analysis
-    * Moran's I
-    * Moran's I for rates
-    * Local Moran's I
-    * Local Moran's I for rates
-    * Local Getis-Ord
+    * [Moran's I](https://github.com/weikang9009/processing_pysal/blob/integrate/moran.py) 
+    * [Moran's I for rates](https://github.com/weikang9009/processing_pysal/blob/integrate/moranrate.py)
+    * [Local Moran's I](https://github.com/weikang9009/processing_pysal/blob/integrate/moranlocal.py)
+    * [Local Moran's I for rates](https://github.com/weikang9009/processing_pysal/blob/integrate/moranlocal.py)
+    * [Local Getis-Ord](https://github.com/weikang9009/processing_pysal/blob/integrate/moranlocal.py)
 * Inequality 
-    * Theil Interregional Inequality Decomposition
+    * [Theil Interregional Inequality Decomposition](https://github.com/weikang9009/processing_pysal/blob/integrate/dtheil.py)
 
 ![sofar](png/sofar.png)
 
@@ -25,7 +25,7 @@
 
 ## Questions
 
-* How to get the output vector layer which would be rendered?
+* How to get the output vector layer which would be rendered? The [code](https://github.com/weikang9009/processing_pysal/blob/integrate/moranlocal.py#L109)
 
 ```python
 layer = dataobjects.getObjectFromUri(self.getOutputValue(self.OUTPUT))
@@ -45,6 +45,9 @@ will render another vector layer instead of "Result" layer:
     
 ## Potential Directions:
 
+* Implementation of spatial weights builder
+    * Continguity weights: integration of [weights builder](https://github.com/sjsrey/QGIS-Processing-tools/blob/master/2.6/scripts/weights_builder.py)
+    * [Distance based spatial weights](https://github.com/pysal/pysal/blob/master/pysal/weights/Distance.py)
 * Implementation of other [pysal ESDA measures](https://github.com/pysal/pysal/tree/master/pysal/esda).
 * Implementation of [pysal spatial dynamics module](https://github.com/pysal/pysal/tree/master/pysal/spatial_dynamics) which comprises of spatiotemporal analysis methods:
     * Is there a spatial data structure with a time component existing for QGIS? 
