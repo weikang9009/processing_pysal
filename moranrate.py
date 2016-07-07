@@ -17,7 +17,7 @@ class MoranRate(GeoAlgorithm):
     CONTIGUITY = 'CONTIGUITY'
 
     def defineCharacteristics(self):
-        self.name = "Moran's for rates"
+        self.name = "Moran's I for rates"
         self.group = 'Exploratory Spatial Data Analysis'
 
         ##Spatial statistics=group
@@ -46,10 +46,10 @@ class MoranRate(GeoAlgorithm):
         
         contiguity = self.getParameterValue(self.CONTIGUITY)    
         if contiguity == 0: # queen
-            print 'INFO: Moran\'s for rates using queen contiguity'
+            print 'INFO: Moran\'s I for rates using queen contiguity'
             w=pysal.queen_from_shapefile(filename)
         else: # 1 for rook
-            print 'INFO: Moran\'s for rates using rook contiguity'
+            print 'INFO: Moran\'s I for rates using rook contiguity'
             w=pysal.rook_from_shapefile(filename)
             
         f = pysal.open(filename.replace('.shp','.dbf'))

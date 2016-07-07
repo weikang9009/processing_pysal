@@ -8,6 +8,8 @@ from processing.core.GeoAlgorithm import GeoAlgorithm
 from processing.core.parameters import *
 from processing.core.outputs import *
 from processing.tools import dataobjects
+from PyQt4 import QtGui
+from qgis.utils import iface
 
 class MoranLocalRate(GeoAlgorithm):
 
@@ -19,7 +21,7 @@ class MoranLocalRate(GeoAlgorithm):
     P_SIM = 'P_SIM'
     
     def defineCharacteristics(self):
-        self.name = "Local Moran's for rates"
+        self.name = "Local Moran's I for rates"
         self.group = 'Exploratory Spatial Data Analysis'
         
         ##input=vector
@@ -62,10 +64,12 @@ class MoranLocalRate(GeoAlgorithm):
 
         contiguity = self.getParameterValue(self.CONTIGUITY)
         if contiguity == 'queen':
-            print 'INFO: Local Moran\'s for rates using queen contiguity'
+            print 'INFO: Local Moran\'s I for rates using queen ' \
+                  'contiguity'
             w=pysal.queen_from_shapefile(filename)
         else:
-            print 'INFO: Local Moran\'s for rates using rook contiguity'
+            print 'INFO: Local Moran\'s I for rates using rook ' \
+                  'contiguity'
             w=pysal.rook_from_shapefile(filename)
 
         f = pysal.open(filename.replace('.shp','.dbf'))
@@ -108,3 +112,34 @@ class MoranLocalRate(GeoAlgorithm):
             i+=1
 
         del writer
+
+        out_layer = dataobjects.getObjectFromUri(self.getOutputValue(
+            self.OUTPUT))
+
+        # out_layer = dataobjects.getObjectFromName("Result")
+
+        # layer = self.getOutputFromName(self.OUTPUT)
+        # output_layer = OutputVector(self.OUTPUT, self.tr('Result'))
+        classes = [0, 1, 2, 3, 4]
+        labels = ["not. sig", "HH", "LH", "LL", "HL"]
+        colors = ["#FFFFFF", "#CC0000", "#66CCFF", "#000099", "#F5CCCC"]
+
+        quads = {}
+        for i in classes:
+            quads[i] = (colors[i], labels[i])
+
+        categories = []
+        for quad, (color, label) in quads.items():
+            symbol = QgsSymbolV2.defaultSymbol(out_layer.geometryType())
+            symbol.setColor(QtGui.QColor(color))
+            category = QgsRendererCategoryV2(quad, symbol, label)
+            categories.append(category)
+
+        expression = "MORANS_C"
+        renderer = QgsCategorizedSymbolRendererV2(expression,
+                                                  categories)
+        out_layer.setRendererV2(renderer)
+        QgsMapLayerRegistry.instance().addMapLayer(out_layer)
+        iface.mapCanvas().refresh()
+        iface.legendInterface().refreshLayerSymbology(out_layer)
+        iface.mapCanvas().refresh()

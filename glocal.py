@@ -1,6 +1,6 @@
-import pysal 
+import pysal
 import numpy as np
-import processing 
+import processing
 from processing.tools.vector import VectorWriter
 from qgis.core import *
 from PyQt4.QtCore import *
@@ -11,7 +11,7 @@ from processing.tools import dataobjects
 from PyQt4 import QtGui
 from qgis.utils import iface
 
-class MoranLocal(GeoAlgorithm):
+class GLocal(GeoAlgorithm):
 
     INPUT = 'INPUT'
     FIELD = 'FIELD'
@@ -20,14 +20,14 @@ class MoranLocal(GeoAlgorithm):
     P_SIM = 'P_SIM'
 
     def defineCharacteristics(self):
-        self.name = "Local Moran's I"
+        self.name = "Local Getis-Ord"
         self.group = 'Exploratory Spatial Data Analysis'
 
         ##input=vector
         ##field=field input
         ##contiguity=string queen
         ##morans_output=output vector
-        ##p_sim=output string 
+        ##p_sim=output string
 
         self.addParameter(ParameterVector(self.INPUT,
             self.tr('Input layer'), [ParameterVector.VECTOR_TYPE_POLYGON]))
@@ -45,14 +45,13 @@ class MoranLocal(GeoAlgorithm):
         field = field[0:10] # try to handle Shapefile field length limit
         filename = self.getParameterValue(self.INPUT)
         layer = dataobjects.getObjectFromUri(filename)
-        filename = dataobjects.exportVectorLayer(layer)        
+        filename = dataobjects.exportVectorLayer(layer)
         provider = layer.dataProvider()
         fields = provider.fields()
-        fields.append(QgsField('MORANS_P', QVariant.Double))
-        fields.append(QgsField('MORANS_Z', QVariant.Double))
-        fields.append(QgsField('MORANS_Q', QVariant.Int))
-        fields.append(QgsField('MORANS_I', QVariant.Double))
-        fields.append(QgsField('MORANS_C', QVariant.Double))
+        fields.append(QgsField('L_G', QVariant.Double))
+        fields.append(QgsField('L_G_p', QVariant.Double))
+        fields.append(QgsField('L_G_S', QVariant.Double))
+        fields.append(QgsField('L_G_ll_hh', QVariant.Double))
 
         writer = self.getOutputFromName(self.OUTPUT).getVectorWriter(
             fields, provider.geometryType(), layer.crs() )
@@ -60,15 +59,15 @@ class MoranLocal(GeoAlgorithm):
 
         contiguity = self.getParameterValue(self.CONTIGUITY)
         if contiguity == 'queen':
-            print 'INFO: Local Moran\'s I using queen contiguity'
+            print 'INFO: Local Getis-Ord G using queen contiguity'
             w=pysal.queen_from_shapefile(filename)
         else:
-            print 'INFO: Local Moran\'s I using rook contiguity'
+            print 'INFO: Local Getis-Ord G using rook contiguity'
             w=pysal.rook_from_shapefile(filename)
 
         f = pysal.open(filename.replace('.shp','.dbf'))
         y=np.array(f.by_col[str(field)])
-        lm = pysal.Moran_Local(y,w,transformation = "r", permutations = 999)
+        lg = pysal.G_Local(y, w, transform="b", permutations=999)
 
         # http://pysal.readthedocs.org/en/latest/library/esda/moran.html?highlight=local%20moran#pysal.esda.moran.Moran_Local
         # values indicate quadrat location 1 HH,  2 LH,  3 LL,  4 HL
@@ -86,23 +85,25 @@ class MoranLocal(GeoAlgorithm):
         #     < -1.96 or > +1.96        |        < 0.05         |       95%
         #     < -2.58 or > +2.58        |        < 0.01         |       99%
 
-        self.setOutputValue(self.P_SIM, str(lm.p_sim))
+        self.setOutputValue(self.P_SIM, str(lg.p_sim))
 
-        sig_q = lm.q * (lm.p_sim <= 0.01) # could make significance level an option
+        sig_g = 1.0 * lg.p_sim <= 0.01  # could make significance level an option
+        ll_hh = 1.0 * (lg.Gs > lg.EGs) + 1
+        sig_ll_hh = sig_g * ll_hh
+
         outFeat = QgsFeature()
         i = 0
         for inFeat in processing.features(layer):
             inGeom = inFeat.geometry()
             outFeat.setGeometry(inGeom)
             attrs = inFeat.attributes()
-            attrs.append(float(lm.p_sim[i]))
-            attrs.append(float(lm.z_sim[i]))
-            attrs.append(int(lm.q[i]))
-            attrs.append(float(lm.Is[i]))
-            attrs.append(int(sig_q[i]))
+            attrs.append(float(lg.Gs[i]))
+            attrs.append(float(lg.p_sim[i]))
+            attrs.append(float(sig_g[i]))
+            attrs.append(float(sig_ll_hh[i]))
             outFeat.setAttributes(attrs)
             writer.addFeature(outFeat)
-            i+=1
+            i += 1
 
         del writer
 
@@ -113,9 +114,9 @@ class MoranLocal(GeoAlgorithm):
 
         #layer = self.getOutputFromName(self.OUTPUT)
         #output_layer = OutputVector(self.OUTPUT, self.tr('Result'))
-        classes = [0, 1, 2, 3, 4]
-        labels = ["not. sig", "HH", "LH", "LL", "HL"]
-        colors = ["#FFFFFF", "#CC0000", "#66CCFF", "#000099", "#F5CCCC"]
+        classes = [0, 1, 2]
+        labels = ["not. sig", "LL", "HH"]
+        colors = ["#FFFFFF", "#000099", "#CC0000"]
 
         quads = {}
         for i in classes:
@@ -128,7 +129,7 @@ class MoranLocal(GeoAlgorithm):
             category = QgsRendererCategoryV2(quad, symbol, label)
             categories.append(category)
 
-        expression = "MORANS_C"
+        expression = "L_G_ll_hh"
         renderer = QgsCategorizedSymbolRendererV2(expression,
                                                   categories)
         out_layer.setRendererV2(renderer)
@@ -136,5 +137,3 @@ class MoranLocal(GeoAlgorithm):
         iface.mapCanvas().refresh()
         iface.legendInterface().refreshLayerSymbology(out_layer)
         iface.mapCanvas().refresh()
-
-

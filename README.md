@@ -10,7 +10,7 @@ You may follow the following procedures to install the plugin:
 so that QGIS will be able to import pysal. 
 ![pysal_path](png/pysal_path.png)
 
-3. Copy the repo to the QGIS "plugins" directory on your computer. If you are using a Mac, it should be "/Application/QGIS.app/Contents/Resources/python/plugins/".
+3. Copy the repo to the QGIS "plugins" directory on your computer. If you are using a Mac, it should be "/Applications/QGIS.app/Contents/Resources/python/plugins/".
 
 4. Restart QGIS, and open the plugin manager. You should see "PySAL for Processing" listed. 
 ![pysal_plugin](png/pysal_plugin.png)
