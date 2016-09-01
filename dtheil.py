@@ -68,7 +68,7 @@ class TheilDSim(GeoAlgorithm):
 
         quads = {}
         for i in range(len(classes)):
-            quads[i] = (colors[i], labels[i])
+            quads[int(classes[i])] = (colors[i], labels[i])
 
         categories = []
         for quad, (color, label) in quads.items():
