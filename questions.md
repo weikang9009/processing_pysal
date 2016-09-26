@@ -12,15 +12,24 @@
     * [Local Getis-Ord](https://github.com/weikang9009/processing_pysal/blob/integrate/moranlocal.py)
 * Inequality 
     * [Theil Interregional Inequality Decomposition](https://github.com/weikang9009/processing_pysal/blob/integrate/dtheil.py)
+* Spatial Dynamics
 
-![sofar](png/sofar.png)
 
-### Automatic rendering output layer for LISAs (significant spots):
+![sofar](png/sofar_9-25-26.png)
+
+### Visualization
+
+#### 1. Automatic rendering output layer for LISAs (significant spots):
 * local Moran's I: not significant, HH, LH, LL, HL
 * local Moran's I for rates: not significant, HH, LH, LL, HL ![local_rate](png/local_rate.png)
 * local Getis-Ord: not significant, LL, HH ![local_G](png/local_G.png)
 
-### Automatic rendering the original layer after calculation
+#### 2. Automatic rendering output layer for LIMAs (significant spots):
+* Neighbor set LIMA: not significant, Concordance, Discordance ![LIMA](png/lima.png)
+* Neighborhood set LIMA: not significant, Concordance, Discordance ![local_rate](png/lima_hood.png)
+
+
+#### 3. Automatic rendering the original layer after calculation
 * Categorical style by the input regionalization scheme for Theil Interregional Inequality Decomposition ![theil_region](png/theil_region.png)
 
 ## Questions

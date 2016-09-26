@@ -5,6 +5,8 @@ from moranlocal import MoranLocal
 from moranlocalrate import MoranLocalRate
 from glocal import GLocal
 from dtheil import TheilDSim
+from neighborsetLIMA import NeighborSetLIMA
+from neighborhoodsetLIMA import NeighborhoodSetLIMA
 
 class pysalProvider(AlgorithmProvider):
 
@@ -16,7 +18,8 @@ class pysalProvider(AlgorithmProvider):
         self.alglist = [Moran(),MoranRate(),
                         MoranLocal(),MoranLocalRate(),
                         GLocal(),
-                        TheilDSim()]
+                        TheilDSim(),
+                        NeighborSetLIMA(),NeighborhoodSetLIMA()]
         for alg in self.alglist:
             alg.provider = self
 
