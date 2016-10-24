@@ -35,7 +35,7 @@ and QGIS activates GRASS plugin by default:
 
 ![grass_acti](png/grass_acti.png)
 
-Since we are not using GRASS plugin at this moment, we mihgt as well 
+Since we are not using GRASS plugin at this moment, we might as well 
 deactivate it and specify "GRASS commands"-"GRASS7 folder" blank 
 instead of trying to install the software.
 
