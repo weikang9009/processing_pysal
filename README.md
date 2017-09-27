@@ -44,4 +44,4 @@ instead of trying to install the software.
 
 * You should be able to see the plugin in the Processing Toolbox now. 
 
-![sofar](png/sofar.png)
+![sofar](png/sofar_9-25-26.png)
